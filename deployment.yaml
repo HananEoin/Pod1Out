@@ -145,6 +145,61 @@ data:
     super-read-only
 ---
 apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: mysql-initdb-config
+  namespace: thesis
+data:
+  initdb.sql: |
+    CREATE DATABASE `pod1out`;
+
+    USE `pod1out`;
+
+    CREATE TABLE Podcasts (
+        ID int NOT NULL,
+        creator_ID int NOT NULL,
+        name varchar(255),
+        record_date DATE,
+        file_location varchar(255),
+        PRIMARY KEY (ID)
+    );
+
+    CREATE TABLE User (
+        ID int NOT NULL,
+        name varchar(255),
+        password varchar(255),
+        picture_location varchar(255),
+        PRIMARY KEY (ID)
+    );
+
+    CREATE TABLE Squad (
+        ID int NOT NULL,
+        name varchar(255),
+        PRIMARY KEY (ID)
+    );
+
+    CREATE TABLE Squad_User (
+        ID int NOT NULL,
+        user_ID int NOT NULL,
+        squad_ID int NOT NULL,
+        PRIMARY KEY (ID)
+    );
+
+    CREATE TABLE Friend_Relationship (
+        ID int NOT NULL,
+        user1_ID int NOT NULL,
+        user2_ID int NOT NULL,
+        PRIMARY KEY (ID)
+    );
+
+    CREATE TABLE Edit_Note (
+        ID int NOT NULL,
+        timestamp TIME,
+        noteType varchar(255),
+        PRIMARY KEY (ID)
+    );
+---
+apiVersion: v1
 kind: Service
 metadata:
   name: mysql
@@ -230,6 +285,8 @@ spec:
               subPath: mysql
             - name: conf
               mountPath: /etc/mysql/conf.d
+            - name: init-script
+              mountPath: /docker-entrypoint-initdb.d
       containers:
         - name: mysql
           image: mysql:5.7
@@ -245,6 +302,8 @@ spec:
               subPath: mysql
             - name: conf
               mountPath: /etc/mysql/conf.d
+            - name: init-script
+              mountPath: /docker-entrypoint-initdb.d
           resources:
             requests:
               cpu: 500m
@@ -257,7 +316,6 @@ spec:
             timeoutSeconds: 5
           readinessProbe:
             exec:
-              # Check we can execute queries over TCP (skip-networking is off).
               command: ["mysql", "-h", "127.0.0.1", "-e", "SELECT 1"]
             initialDelaySeconds: 5
             periodSeconds: 2
@@ -317,6 +375,9 @@ spec:
         - name: config-map
           configMap:
             name: mysql
+        - name: init-script
+          configMap:
+            name: mysql-initdb-config
   volumeClaimTemplates:
     - metadata:
         name: data
@@ -326,4 +387,38 @@ spec:
           requests:
             storage: 10Gi
 ---
-
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: ubuntu-sts
+  namespace: thesis
+spec:
+  selector:
+    matchLabels:
+      app: ubuntu # has to match .spec.template.metadata.labels
+  serviceName: "ubuntu"
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: ubuntu
+    spec:
+      terminationGracePeriodSeconds: 10
+      containers:
+        - name: ubuntu
+          image: ubuntu
+          command:
+            - sleep
+            - "infinity"
+          volumeMounts:
+            - name: audio-volume
+              mountPath: /audio
+  volumeClaimTemplates:
+    - metadata:
+        name: audio-volume
+      spec:
+        accessModes: [ "ReadWriteOnce" ]
+        storageClassName: standard
+        resources:
+          requests:
+            storage: 1Gi

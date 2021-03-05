@@ -5,6 +5,7 @@ eval $(minikube docker-env)
 docker build frontend/. -t frontend
 docker build backend/. -t backend
 
+#Create TLS
 openssl req -x509 -nodes -days 365 -newkey rsa:2048 \
     -out ingress-tls.crt \
     -keyout ingress-tls.key \
