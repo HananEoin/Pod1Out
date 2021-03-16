@@ -5,6 +5,7 @@ COPY . .
 
 RUN pip install -r requirements.txt
 RUN pip install flask-mysqldb
+RUN pip install flask-cors
 
 ENTRYPOINT ["python"]
 CMD ["app.py"]

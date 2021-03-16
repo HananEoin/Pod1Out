@@ -156,16 +156,16 @@ data:
     USE `pod1out`;
 
     CREATE TABLE Podcasts (
-        ID int NOT NULL,
-        creator_ID int NOT NULL,
+        ID int NOT NULL AUTO_INCREMENT,
         name varchar(255),
         record_date DATE,
         file_location varchar(255),
+        participants int null,
         PRIMARY KEY (ID)
     );
 
     CREATE TABLE User (
-        ID int NOT NULL,
+        ID int NOT NULL AUTO_INCREMENT,
         name varchar(255),
         password varchar(255),
         picture_location varchar(255),
@@ -173,31 +173,49 @@ data:
     );
 
     CREATE TABLE Squad (
-        ID int NOT NULL,
+        ID int NOT NULL AUTO_INCREMENT,
         name varchar(255),
         PRIMARY KEY (ID)
     );
 
     CREATE TABLE Squad_User (
-        ID int NOT NULL,
+        ID int NOT NULL AUTO_INCREMENT,
         user_ID int NOT NULL,
         squad_ID int NOT NULL,
         PRIMARY KEY (ID)
     );
 
     CREATE TABLE Friend_Relationship (
-        ID int NOT NULL,
+        ID int NOT NULL AUTO_INCREMENT,
         user1_ID int NOT NULL,
         user2_ID int NOT NULL,
         PRIMARY KEY (ID)
     );
 
     CREATE TABLE Edit_Note (
-        ID int NOT NULL,
+        ID int NOT NULL AUTO_INCREMENT,
         timestamp TIME,
         noteType varchar(255),
         PRIMARY KEY (ID)
     );
+
+    create table Podcast_User_Relationship
+    (
+        ID int auto_increment,
+        user_id    int null,
+        episode_id int null,
+        PRIMARY KEY (ID)
+    );
+
+
+    create table Table_Name
+    (
+        id int auto_increment,
+        podcast_id int null,
+        user_id    int null,
+        PRIMARY KEY (ID)
+    );
+
 ---
 apiVersion: v1
 kind: Service
@@ -387,38 +405,17 @@ spec:
           requests:
             storage: 10Gi
 ---
-apiVersion: apps/v1
-kind: StatefulSet
+apiVersion: v1
+kind: PersistentVolume
 metadata:
-  name: ubuntu-sts
-  namespace: thesis
+  name: database
+  labels:
+    type: local
 spec:
-  selector:
-    matchLabels:
-      app: ubuntu # has to match .spec.template.metadata.labels
-  serviceName: "ubuntu"
-  replicas: 1
-  template:
-    metadata:
-      labels:
-        app: ubuntu
-    spec:
-      terminationGracePeriodSeconds: 10
-      containers:
-        - name: ubuntu
-          image: ubuntu
-          command:
-            - sleep
-            - "infinity"
-          volumeMounts:
-            - name: audio-volume
-              mountPath: /audio
-  volumeClaimTemplates:
-    - metadata:
-        name: audio-volume
-      spec:
-        accessModes: [ "ReadWriteOnce" ]
-        storageClassName: standard
-        resources:
-          requests:
-            storage: 1Gi
+  storageClassName: manual
+  capacity:
+    storage: 10Gi
+  accessModes:
+    - ReadWriteOnce
+  hostPath:
+    path: "/mnt/data"

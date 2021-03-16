@@ -1,4 +1,215 @@
-/*Green = #59981A
-Cream = #ECF87F
-Light Green = #81B622
-Dark Green = #3D550C*/
+:root{
+    --custom-pink :#ef476f;
+    --custom-yellow:#ffd166;
+    --custom-green:#06d6a0;
+    --custom-blue:#118ab2;
+    --custom-navy:#073b4c;
+}
+
+.navbar-header{
+    font-size: 32px;
+}
+
+.navbar {
+    padding: 0 !important;
+}
+
+.container {
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+}
+
+#logout{
+    background-color: var(--custom-pink);
+}
+
+#panel{
+    background-color: var(--custom-blue);
+    margin: 2.5%;
+    max-width: 75%;
+    min-width: 75%;
+    border-radius: 25px;
+    border: 10px solid var(--custom-navy);
+}
+
+#friends-list{
+    background-color: white;
+    max-width: 15%;
+    min-width: 15%;
+    min-height: 858px;
+    margin: 2.5%;
+    border-radius: 25px;
+    border: 10px solid var(--custom-navy);
+}
+
+.jumbotron{
+    background-color: var(--custom-navy);
+    color: var(--custom-pink);
+    font-size: 20px;
+    padding: 10px;
+    text-align: center;
+}
+
+#friends-list li{
+    list-style: none;
+}
+
+#main-row{
+    background-color: white;
+    max-width: 100%;
+}
+
+.container{
+    background-color: white;
+    max-width: 100%;
+    max-height: 100%;
+    min-height: 100%;
+}
+
+.loginBox{
+    background-color: white;
+    margin: 22.5% 30%;
+}
+
+.login-container{
+    background-color: var(--custom-blue);
+    max-width: 100%;
+    max-height: 100%;
+    min-height: 100%;
+    padding: 6.7% 20%;
+    color: var(--custom-pink);
+}
+
+.loginBox{
+    align-content: center;
+    background-color: var(--custom-navy);
+    padding: 5%;
+    border-radius: 25px;
+}
+
+.loginBox input{
+    color: black;
+}
+
+.button{
+    background-color:  var(--custom-yellow);
+    border: 3px solid var(--custom-pink);
+    border-radius: 5px;
+}
+
+#userBar{
+    background-color: var(--custom-navy);
+    padding: 20px;
+    color: white;
+}
+
+.profile_image{
+    height:40px;
+    width:40px;
+}
+
+thead{
+    background-color: var(--custom-navy);
+    color: #FFFFFF;
+}
+
+table{
+    max-height: inherit;
+}
+
+tbody{
+    color:black;
+    background-color: white;
+}
+
+.table-holder {
+    position: relative;
+    height:50%;
+    min-height: 50%;
+    width:97%;
+    margin:auto;
+    /*padding: 0 5px;*/
+    background-color: white;
+}
+
+tr{
+    font-size: 12px;
+    margin: 1px;
+    padding: 1px;
+}
+
+.table td{
+    padding: 8px;
+}
+
+.top{
+    max-height: 50%;
+    max-width: 100%;
+    min-height: 400px;
+    min-width: 80%;
+    margin: 20px;
+    background-color: white;
+    border-radius: 25px;
+    border: 10px solid var(--custom-navy);
+}
+
+.right{
+    max-height: 50%;
+    max-width: 50%;
+    min-height: 50%;
+    min-width: 40%;
+    margin: 40px;
+    background-color: white;
+    border-radius: 25px;
+    border: 10px solid var(--custom-navy);
+}
+
+.left{
+    max-height: 50%;
+    max-width: 50%;
+    min-height: 50%;
+    min-width: 40%;
+    background-color: white;
+    border-radius: 25px;
+    border: 10px solid var(--custom-navy);
+    margin: 40px;
+}
+
+.player{
+    padding: 40px;
+}
+
+.userBarElement{
+    margin: 0 15px;
+}
+
+#AudioTron{
+    margin-bottom: 0;
+}
+
+.button_list .button {
+    min-width: 120px;
+    margin: 10px;
+}
+
+
+.button_list{
+    list-style-type: none;
+    margin: 10px;
+}
+
+.record_left{
+    float: left;
+}
+
+.record_right{
+    float: left;
+
+}
+
+.light{
+    max-height: 250px;
+    max-width: 250px;
+    min-height: 250px;
+    min-width: 250px;
+}

@@ -1,99 +1,85 @@
-import React from 'react';
 import './App.css';
-import MicRecorder from 'mic-recorder-to-mp3';
-import axios from 'axios';
+import React from "react"
+import Cookies from 'js-cookie';
+import AuthApi from "./AuthApi"
+import Dashboard from "./pages/Dashboard.js"
+import Login from "./pages/Login.js"
+import AppContextProvider from "./AppContext.js"
+import{
+    BrowserRouter as Router,
+    Switch,
+    Route,
+    Redirect
+} from "react-router-dom";
 
-const Mp3Recorder = new MicRecorder({bitRate: 256})
-const flaskEndpoint = "https://pod1out.ie/backend";
+function App(){
+    const[auth, setAuth] = React.useState(false);
 
-class App extends React.Component{
-    constructor(props) {
-        super(props);
-        this.state = {
-            isRecording: false,
-            blobURL: '',
-            isBlocked: false,
-            recorded:false
+    const readCookie = () =>{
+        const cookie= Cookies.get("user");
+        if (cookie){
+            setAuth(true);
         }
     }
 
-    start = () => {
-        if(this.state.isBlocked){
-            console.log('Permission Denied');
-        } else {
-            Mp3Recorder.start().then(() => {
-                this.setState({isRecording: true});
-            }).catch((e) => console.error(e));
+    React.useEffect(()=> {
+        readCookie()
+    }, [])
+    return (
+        <div>
+            <AuthApi.Provider value={{auth,setAuth}}>
+                <AppContextProvider>
+                    <Router>
+                        <Routes/>
+                    </Router>
+                </AppContextProvider>
+
+            </AuthApi.Provider>
+        </div>
+    );
+}
+
+
+
+const Routes = () => {
+    const Auth = React.useContext(AuthApi)
+    return (
+        // <Dashboard/>
+        <Switch>
+            <ProtectedLogin path="/login" component={Login} auth={Auth.auth}/>
+            <ProtectedRoute path="/" auth={Auth.auth} component={Dashboard}/>
+        </Switch>
+    )
+}
+
+const ProtectedRoute = ({auth,component:Component,...rest}) =>{
+    return(
+        <Route
+            {...rest}
+            render ={()=>auth?(
+                    <Component/>
+                ):
+                (
+                    <Redirect to="/login"/>
+                )
             }
-        };
+        />
+    )
+}
 
-    stop = () => {
-        Mp3Recorder
-            .stop()
-            .getMp3().then(([buffer, blob]) => {
-            const blobURL = URL.createObjectURL(blob);
-            this.setState({blobURL, isRecording: false, recorded:true})
-        });
-    };
-
-    componentDidMount() {
-        navigator.mediaDevices.getUserMedia({audio: true},
-            ()=> {
-                console.log('Permission Granted');
-                this.setState({isBlocked:false});
-            },
-            ()=> {
-                console.log('Permission Denied');
-                this.setState({isBlocked:true});
-
+const ProtectedLogin = ({auth,component:Component,...rest}) =>{
+    return(
+        <Route
+            {...rest}
+            render ={()=>!auth?(
+                    <Component/>
+                ):
+                (
+                    <Redirect to="/Dashboard"/>
+                )
             }
-        );
-
-        axios.get(flaskEndpoint + '/')
-            .then(res => {
-                const persons = res.data;
-                console.log(persons);
-            })
-    }
-
-    render() {
-        return(
-            <div className="App">
-                <div className="container">
-                    <nav className="navbar navbar-inverse">
-                        <div className="container-fluid">
-                            <div className="navbar-header">
-                                <a className="navbar-brand" href="#">WebSiteName</a>
-                            </div>
-                            <ul className="nav navbar-nav">
-                                <li className="active"><a href="#">Home</a></li>
-                                <li><a href="#">Page 1</a></li>
-                                <li><a href="#">Page 2</a></li>
-                                <li><a href="#">Page 3</a></li>
-                            </ul>
-                        </div>
-                    </nav>
-                    <div className="row">
-                        <div id = "left" className="col-xs-10">
-                            <header className="App-Header">
-                                <button onClick={this.start} disabled={this.state.isRecording}>Record</button>
-                                <button onClick={this.stop} disabled={!this.state.isRecording}>Stop</button>
-                                <audio src={this.state.blobURL} controls = "controls"/>
-                            </header>
-                            <header>
-                                <button disabled={this.state.recorded}>Push Audio</button>
-                                <button>Pull Audio</button>
-                                <audio controls = "controls"/>
-                            </header>
-                        </div>
-                        <div id = "right" className="col-xs-2">
-                            TWO
-                        </div>
-                    </div>
-                </div>
-            </div>
-        )
-    }
+        />
+    )
 }
 
 export default App;
