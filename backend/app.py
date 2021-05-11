@@ -1,11 +1,22 @@
-from flask import Flask, jsonify, request
+import os
+
+from flask import Flask, jsonify, request, send_from_directory, flash, request, redirect, url_for
 from flask_cors import cross_origin, CORS
+from werkzeug.utils import secure_filename
 
 from sql_manager import *
 from dict_helper import *
+from file_helper import *
 import json
 app = Flask(__name__)
 cors = CORS(app)
+app.config["CLIENT_AUDIO"] = "/home/eoin/Programming/Thesis/backend/audio"
+
+uploads_dir = "/home/eoin/Programming/Thesis/backend/audio"
+
+
+UPLOAD_FOLDER = '/path/to/the/uploads'
+ALLOWED_EXTENSIONS = {'txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif'}
 
 
 @app.route('/login', methods=['POST'])
@@ -59,13 +70,24 @@ def get_episodes(user_id):
 
 @app.route('/episode/audio/<int:episode_id>', methods=['GET'])
 @cross_origin()
-def get_audio_files(episode_id):
+def get_audio_info(episode_id):
     user_audio = get_user_audio_for_episode(episode_id)
     main_audio = get_episode_with_epid(episode_id)
     audio_dict = audio_to_dict(user_audio, main_audio)
-    print(audio_dict)
     return json_response(audio_dict)
 
+
+@app.route('/episode/audio/file/<string:audio_location>', methods=['GET'])
+@cross_origin()
+def get_audio_file(audio_location):
+    audio_name = "test.mp3"
+
+    #TODO Make particular file
+
+    try:
+        return send_from_directory(app.config["CLIENT_AUDIO"], filename=audio_name, as_attachment=True)
+    except FileNotFoundError:
+        os.abort(404)
 
 # @app.route('/audio/master/<int:user_id>', methods=['POST'])
 # @cross_origin()
@@ -78,13 +100,29 @@ def get_audio_files(episode_id):
 #     return str(0)
 
 
-@app.route('/audio/<int:user_id>', methods=['POST'])
-@cross_origin()
-def make_audio(user_id):
-    # print(type(request.json))
-    print("Posted file: {}".format(request.files))
+def allowed_file(filename):
+    return '.' in filename and \
+           filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
-    return str(0)
+
+@app.route('/audio', methods=['POST'])
+@cross_origin()
+def make_user_audio():
+    # Taking input
+    user_id = request.args.get('user_id')
+    episode_id = request.args.get('episode_id')
+
+    # Saving File
+    saved_file = request.files['audio']
+    saved_file.save(os.path.join(uploads_dir, secure_filename(saved_file.filename)))
+
+    # Transfer file to
+    # Add file details to database
+
+    # Create in Database
+    create_user_audio_for_episode(user_id, episode_id)
+
+    return json_response("File saved")
 
 
 def check_notification(user_id):

@@ -34,8 +34,6 @@ const Login = () => {
             json: true
         }
 
-        console.log(options)
-
         axios(options)
             .then(response => {
                 let id = response.data.id;

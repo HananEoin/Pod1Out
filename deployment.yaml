@@ -151,11 +151,13 @@ metadata:
   namespace: thesis
 data:
   initdb.sql: |
+    CREATE USER 'poduser'@'localhost' IDENTIFIED BY 'password';
+
     CREATE DATABASE `pod1out`;
 
     USE `pod1out`;
 
-    CREATE TABLE Podcasts (
+    CREATE TABLE Episode (
         ID int NOT NULL AUTO_INCREMENT,
         name varchar(255),
         record_date DATE,
@@ -168,13 +170,23 @@ data:
         ID int NOT NULL AUTO_INCREMENT,
         name varchar(255),
         password varchar(255),
-        picture_location varchar(255),
+        location varchar(255),
+        PRIMARY KEY (ID)
+    );
+
+    CREATE TABLE Audio (
+        ID int NOT NULL AUTO_INCREMENT,
+        name varchar(255),
+        user_id int,
+        episode_id int,
+        location int,
         PRIMARY KEY (ID)
     );
 
     CREATE TABLE Squad (
         ID int NOT NULL AUTO_INCREMENT,
         name varchar(255),
+        image_location varchar(255),
         PRIMARY KEY (ID)
     );
 
@@ -199,22 +211,6 @@ data:
         PRIMARY KEY (ID)
     );
 
-    create table Podcast_User_Relationship
-    (
-        ID int auto_increment,
-        user_id    int null,
-        episode_id int null,
-        PRIMARY KEY (ID)
-    );
-
-
-    create table Table_Name
-    (
-        id int auto_increment,
-        podcast_id int null,
-        user_id    int null,
-        PRIMARY KEY (ID)
-    );
 
 ---
 apiVersion: v1

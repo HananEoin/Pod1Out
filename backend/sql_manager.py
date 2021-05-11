@@ -3,8 +3,8 @@ import mysql.connector
 
 def check_login(username, password):
     conn = mysql.connector.connect(host="localhost",
-                                   user='user1',
-                                   password='Password',
+                                   user='poduser',
+                                   password='password',
                                    database='pod1out',
                                    auth_plugin='mysql_native_password')
     db_cursor = conn.cursor()
@@ -17,8 +17,8 @@ def check_login(username, password):
 
 def get_friends_for_user(user_id):
     conn = mysql.connector.connect(host="localhost",
-                                   user='user1',
-                                   password='Password',
+                                   user='poduser',
+                                   password='password',
                                    database='pod1out',
                                    auth_plugin='mysql_native_password')
     db_cursor = conn.cursor()
@@ -31,8 +31,8 @@ def get_friends_for_user(user_id):
 
 def get_squad_for_user(user_id):
     conn = mysql.connector.connect(host="localhost",
-                                   user='user1',
-                                   password='Password',
+                                   user='poduser',
+                                   password='password',
                                    database='pod1out',
                                    auth_plugin='mysql_native_password')
     db_cursor = conn.cursor()
@@ -45,12 +45,12 @@ def get_squad_for_user(user_id):
 
 def get_episodes_for_user(user_id):
     conn = mysql.connector.connect(host="localhost",
-                                   user='user1',
-                                   password='Password',
+                                   user='poduser',
+                                   password='password',
                                    database='pod1out',
                                    auth_plugin='mysql_native_password')
     db_cursor = conn.cursor()
-    statement = "select * from Episode inner join User_Episode_Audio EUR on Episode.ID" \
+    statement = "select * from Episode inner join Audio EUR on Episode.ID" \
                 " = EUR.episode_id where user_id = %s;"
     db_cursor.execute(statement, (user_id,))
     db_result = db_cursor.fetchall()
@@ -60,8 +60,8 @@ def get_episodes_for_user(user_id):
 
 def get_episode_with_epid(episode_id):
     conn = mysql.connector.connect(host="localhost",
-                                   user='user1',
-                                   password='Password',
+                                   user='poduser',
+                                   password='password',
                                    database='pod1out',
                                    auth_plugin='mysql_native_password')
     db_cursor = conn.cursor()
@@ -74,37 +74,49 @@ def get_episode_with_epid(episode_id):
 
 def make_new_audio_track(audio_track):
     conn = mysql.connector.connect(host="localhost",
-                                   user='user1',
-                                   password='Password',
+                                   user='poduser',
+                                   password='password',
                                    database='pod1out',
                                    auth_plugin='mysql_native_password')
     db_cursor = conn.cursor()
-    statement = "INSERT into Episode_User_Relationship (user_id, episode_id, location) values (%s,%s,%s)"
+    statement = "INSERT into Audio (user_id, episode_id, location) values (%s,%s,%s)"
     db_cursor.execute(statement, (audio_track.user_id, audio_track.episode_id, audio_track.location,))
     db_cursor.close()
 
 
 def make_new_episode(episode):
     conn = mysql.connector.connect(host="localhost",
-                                   user='user1',
-                                   password='Password',
+                                   user='poduser',
+                                   password='password',
                                    database='pod1out',
                                    auth_plugin='mysql_native_password')
     db_cursor = conn.cursor()
-    statement = "INSERT into Episode_User_Relationship (user_id, episode_id, location) values (%s,%s,%s)"
+    statement = "INSERT into Episode (user_id, location) values (%s,%s,%s)"
     db_cursor.execute(statement, (episode.name, episode.record_date, episode.file_location, episode.participants))
     db_cursor.close()
 
 
 def get_user_audio_for_episode(episode_id):
     conn = mysql.connector.connect(host="localhost",
-                                   user='user1',
-                                   password='Password',
+                                   user='poduser',
+                                   password='password',
                                    database='pod1out',
                                    auth_plugin='mysql_native_password')
     db_cursor = conn.cursor()
-    statement = "select * from User_Episode_Audio join User on User_Episode_Audio.user_id = User.ID where episode_id = %s;"
+    statement = "SELECT * from Audio join User on Audio.user_id = User.ID where episode_id = %s;"
     db_cursor.execute(statement, (episode_id,))
     db_result = db_cursor.fetchall()
     db_cursor.close()
     return db_result
+
+
+def create_user_audio_for_episode(user_id, episode_id):
+    conn = mysql.connector.connect(host="localhost",
+                                   user='poduser',
+                                   password='password',
+                                   database='pod1out',
+                                   auth_plugin='mysql_native_password')
+    db_cursor = conn.cursor()
+    statement = "INSERT into Audio (user_id, episode_id) values (%s,%s)"
+    db_cursor.execute(statement, (user_id, episode_id))
+    db_cursor.close()

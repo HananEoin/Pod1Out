@@ -16,6 +16,7 @@ const EpisodesPanel = () => {
     const [audios, setAudios] = useState([]);
     const [audioFetchError, setAudioFetchError] = useState(false);
     const [episodeFetchError, setEpisodeFetchError] = useState(false)
+    const [ episodeAudio ] = useState([])
 
 
     useEffect(() => {
@@ -52,7 +53,6 @@ const EpisodesPanel = () => {
         axios.get(url)
             .then(response => {
                 setAudios(response.data.audio)
-                console.log(response.data.audio)
             })
             .catch(error => {
                 console.log("Audio Fetch Error: " + error)
@@ -64,7 +64,6 @@ const EpisodesPanel = () => {
         let url = `${flaskEndpoint}episode/${episodeId}`;
         axios.get(url)
             .then(response => {
-                console.log({ data: response.data });
                 setEpisode(response.data.episode)
             })
             .catch(error => {
@@ -131,7 +130,9 @@ const EpisodesList = ({ episodes, error }) => {
 
 const EpisodePlayer = () => {
     const { episode } = useAppContext();
-    console.log({episode});
+
+    let audio_location = episode.file_location
+    let audio_url = `${flaskEndpoint}episode/audio/file${audio_location}`;
 
     if (episode && episode.id) {
         return (
@@ -140,7 +141,7 @@ const EpisodePlayer = () => {
                 <div className="player">
                     <h1>{episode.name}</h1>
                     <ReactAudioPlayer
-                        src={episode.file_location}
+                        src={audio_url}
                         controls
                     />
                 </div>
@@ -166,10 +167,8 @@ const EpisodePlayer = () => {
 
 const AudioList = ({ audios, error }) => {
 
-    function downloadAudio(id) {
-        //TODO Next Sprint
-        // Make Downloads happen
-        // getAudio(id);
+    function generateDownloadPath(file_location) {
+        return `${flaskEndpoint}episode/audio/file/${file_location}`;
     }
 
 
@@ -179,18 +178,17 @@ const AudioList = ({ audios, error }) => {
             <table className="table" id="audio-table">
                 <thead>
                 <tr>
-                    <th scope="col" >Participant</th>
+                    <th scope="col">Participant</th>
                     <th scope="col">Download</th>
                 </tr>
                 </thead>
                 <tbody>
                     {error && <tr>Unable to fetch Audio files</tr>}
                     {!error && audios.map(audio => {
-                        console.log(audio);
                         return <AudioInList
                             key={audio.id}
                             name={audio.name}
-                            selectButton={() => downloadAudio(audio.file_location)}
+                            downloadLink={generateDownloadPath(audio.file_location)}
                         />
                     })}
                 </tbody>
