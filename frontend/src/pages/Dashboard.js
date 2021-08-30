@@ -1,20 +1,19 @@
 import React, {useState} from "react"
 import AuthApi from "../AuthApi"
 import Cookies from "js-cookie"
-import RecordPanel from "../components/RecordPanel";
-import EpisodesPanel from "../components/EpisodesPanel";
+// import RecordPanel from "../components/RecordPanel";
+// import EpisodesPanel from "../components/EpisodesPanel";
 import Bell from "../imgs/Bell.png";
-import NoteBell from "../imgs/Bell2.png";
+// import NoteBell from "../imgs/Bell2.png";
 import Leonardo from '../imgs/Leonardo.png'
-import SidePanel from "../components/SidePanel";
+// import SidePanel from "../components/SidePanel";
 import Donatello from "../imgs/Donatello.png";
+import Panel from "../components/Panel";
 import Michaelangelo from "../imgs/Michelangelo.png";
 import Raphael from "../imgs/Raphael.png";
 import {useAppContext} from "../AppContext";
 
 const Dashboard = () => {
-    const [active, setActive] = useState("Episodes");
-
     const { user } = useAppContext();
 
 
@@ -29,7 +28,6 @@ const Dashboard = () => {
                     <div id="userBar" className="row">
                         <img className="profile_image userBarElement" src={getAvatar(user.location)}/>
                         <h4 className="userBarElement">{user.name}</h4>
-                        {/*TODO NEXT SPRINT NOTIFICATION*/}
                         <img className="profile_image userBarElement" src={Bell}/>
                         <LogoutButton className="userBarElement"/>
                     </div>
@@ -37,19 +35,17 @@ const Dashboard = () => {
             </nav>
             <div id="main-row" className="row">
                 <div id="panel">
-                    <Switcher active={active}/>
+                    <Panel />
                 </div>
-                <SidePanel setActive={setActive}/>
             </div>
         </div>
     );
 }
 
-const Switcher = ({ active }) => {
+const Switcher = () => {
     return(
         <div>
-            {active === "Episodes" && <EpisodesPanel />}
-            {active === "Record" && <RecordPanel />}
+            <Panel/>
         </div>
     )
 }

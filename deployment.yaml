@@ -153,65 +153,24 @@ data:
   initdb.sql: |
     CREATE USER 'poduser'@'localhost' IDENTIFIED BY 'password';
 
-    CREATE DATABASE `pod1out`;
+        CREATE DATABASE `pod1out`;
 
-    USE `pod1out`;
+        USE `pod1out`;
 
-    CREATE TABLE Episode (
-        ID int NOT NULL AUTO_INCREMENT,
-        name varchar(255),
-        record_date DATE,
-        file_location varchar(255),
-        participants int null,
-        PRIMARY KEY (ID)
-    );
+        CREATE TABLE Episode (
+            ID int NOT NULL AUTO_INCREMENT,
+            record_date DATE,
+            length int not null,
+            file_location varchar(255),
+            PRIMARY KEY (ID)
+        );
 
-    CREATE TABLE User (
-        ID int NOT NULL AUTO_INCREMENT,
-        name varchar(255),
-        password varchar(255),
-        location varchar(255),
-        PRIMARY KEY (ID)
-    );
-
-    CREATE TABLE Audio (
-        ID int NOT NULL AUTO_INCREMENT,
-        name varchar(255),
-        user_id int,
-        episode_id int,
-        location int,
-        PRIMARY KEY (ID)
-    );
-
-    CREATE TABLE Squad (
-        ID int NOT NULL AUTO_INCREMENT,
-        name varchar(255),
-        image_location varchar(255),
-        PRIMARY KEY (ID)
-    );
-
-    CREATE TABLE Squad_User (
-        ID int NOT NULL AUTO_INCREMENT,
-        user_ID int NOT NULL,
-        squad_ID int NOT NULL,
-        PRIMARY KEY (ID)
-    );
-
-    CREATE TABLE Friend_Relationship (
-        ID int NOT NULL AUTO_INCREMENT,
-        user1_ID int NOT NULL,
-        user2_ID int NOT NULL,
-        PRIMARY KEY (ID)
-    );
-
-    CREATE TABLE Edit_Note (
-        ID int NOT NULL AUTO_INCREMENT,
-        timestamp TIME,
-        noteType varchar(255),
-        PRIMARY KEY (ID)
-    );
-
-
+        CREATE TABLE User (
+            ID int NOT NULL AUTO_INCREMENT,
+            name varchar(255),
+            password varchar(255),
+            PRIMARY KEY (ID)
+        );
 ---
 apiVersion: v1
 kind: Service
@@ -405,13 +364,87 @@ apiVersion: v1
 kind: PersistentVolume
 metadata:
   name: database
-  labels:
-    type: local
+  namespace: thesis
 spec:
   storageClassName: manual
+  persistentVolumeReclaimPolicy: Retain
+    storageClassName: standard
   capacity:
     storage: 10Gi
   accessModes:
     - ReadWriteOnce
   hostPath:
     path: "/mnt/data"
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: storage
+  namespace: thesis
+  labels:
+    app: storage
+data:
+  primary.cnf: |
+    # Apply this config only on the primary.
+    log-bin
+  replica.cnf: |
+    # Apply this config only on replicas.
+    super-read-only
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: storage
+  namespace: thesis
+spec:
+  selector:
+    matchLabels:
+      app: audio-storage
+  serviceName: audio-storagekga
+
+  replicas: 3
+  template:
+    metadata:
+      labels:
+        app: audio-storage
+    spec:
+      terminationGracePeriodSeconds: 10
+      containers:
+        - name: storage
+          image: ubuntu
+          command:
+            - sleep
+            - "infinity"
+          volumeMounts:
+            - name: storage-volume
+              mountPath: /storage
+      volumes:
+        - name: config-map
+          configMap:
+            name: mysql
+  volumeClaimTemplates:
+    - metadata:
+        name: storage-volume
+      spec:
+        accessModes: [ "ReadWriteOnce" ]
+        storageClassName: standard
+        resources:
+          requests:
+            storage: 10Gi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: storage
+  namespace: thesis
+  labels:
+    app:
+      backend
+spec:
+  ports:
+    - name: storage
+      port: 4500
+  clusterIP: None
+  selector:
+    app: storage
+---

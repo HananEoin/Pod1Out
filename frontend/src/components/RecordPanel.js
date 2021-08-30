@@ -4,7 +4,6 @@ import red_light from "../imgs/red.png"
 import green_light from "../imgs/green.png"
 import MicRecorder from "mic-recorder-to-mp3";
 import axios from "axios";
-import Cookies from "js-cookie";
 
 // const flaskEndpoint = "https://pod1out.ie/backend";
 const flaskEndpoint = "http://127.0.0.1:5000/";
@@ -58,8 +57,6 @@ class RecordPanel extends React.Component {
     }
 
     startRecording() {
-        //TODO NEXT SPRINT
-        // Take Timestamp
         if(this.state.isBlocked){
             console.log('Permission Denied');
         } else {
@@ -117,8 +114,6 @@ class RecordPanel extends React.Component {
 
         });
 
-
-
         //TODO send to server
     }
 
@@ -132,9 +127,9 @@ class RecordPanel extends React.Component {
                     <div className="left">
                         <div className="record_left">
                             <ul className="button_list">
-                                <li><button className="button" onClick={() => this.readyUp()}>{this.state.readyText}</button></li>
-                                <li><button className="button" onClick={() => this.startRecording()} disabled={this.state.isRecording}>Record</button></li>
-                                <li><button className="button" onClick={() => this.stopRecording()} disabled={!this.state.isRecording}>End</button></li>
+                                <li><button className="button" onClick={() => this.readyUp()}>Wrong</button></li>
+                                <li><button className="button" onClick={() => this.startRecording()} disabled={this.state.isRecording}>Wrong</button></li>
+                                <li><button className="button" onClick={() => this.stopRecording()} disabled={!this.state.isRecording}>Wrong</button></li>
                             </ul>
                             <h1>Playback:</h1>
                             <audio src={this.state.blobURL} controls="controls"/>
@@ -166,7 +161,6 @@ const Party = () => {
     </tr>
 
 
-    //TODO get individual added to party
     return (
         <table className="table" id="episodes-table">
             <thead>

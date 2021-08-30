@@ -10,7 +10,6 @@ const flaskEndpoint = "http://127.0.0.1:5000/";
 const Login = () => {
 
     const { setAuth } = useContext(AuthApi);
-
     const { setUser } = useAppContext();
 
     const handleLogin = (event) => {

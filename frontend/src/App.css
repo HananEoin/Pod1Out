@@ -26,8 +26,8 @@
 #panel{
     background-color: var(--custom-blue);
     margin: 2.5%;
-    max-width: 75%;
-    min-width: 75%;
+    max-width: 97%;
+    min-width: 97%;
     border-radius: 25px;
     border: 10px solid var(--custom-navy);
 }
@@ -176,7 +176,7 @@ tr{
 }
 
 .player{
-    padding: 40px;
+    padding: 30px 40px;
 }
 
 .userBarElement{
@@ -200,11 +200,16 @@ tr{
 
 .record_left{
     float: left;
+    margin-top: 50px;
+}
+
+.record_middle{
+    float: left;
+    margin-top: 100px;
 }
 
 .record_right{
     float: left;
-
 }
 
 .light{

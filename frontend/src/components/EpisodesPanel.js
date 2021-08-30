@@ -4,9 +4,11 @@ import EpisodeInList from "./EpisodeInList";
 import ReactAudioPlayer from 'react-audio-player';
 import AudioInList from "./AudioInList";
 import {useAppContext} from "../AppContext";
+import green_light from "../imgs/green.png";
+import red_light from "../imgs/red.png";
 
-// const flaskEndpoint = "https://pod1out.ie/backend";
-const flaskEndpoint = "http://127.0.0.1:5000/";
+const flaskEndpoint = "https://pod1out.ie/backend";
+// const flaskEndpoint = "http://127.0.0.1:5000/";
 
 
 const EpisodesPanel = () => {
@@ -16,12 +18,11 @@ const EpisodesPanel = () => {
     const [audios, setAudios] = useState([]);
     const [audioFetchError, setAudioFetchError] = useState(false);
     const [episodeFetchError, setEpisodeFetchError] = useState(false)
-    const [ episodeAudio ] = useState([])
+    const [episodeAudio ] = useState([])
 
 
     useEffect(() => {
         getEpisodes();
-
     }, [user])
 
     useEffect(() => {
@@ -194,7 +195,6 @@ const AudioList = ({ audios, error }) => {
                 </tbody>
             </table>
         </div>
-
     )
 }
 
